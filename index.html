@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>作業</title>
+</head>
+<body>
+    <h1>憑感覺做</h1>
+    <p>好懶</p>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfnBNB49PpEo6TvuHCPWng_EkNpJpwwoj2MoM2VhcdPSsp84g/viewform?usp=dialog" target="_blank">表單連結</a>
+    <a href="https://github.com/lionsin700-commits/1141225.git" target="_blank">github連結</a>
+
+    <div id="output"></div>
+
+    <script>
+        // 可以替換成你的 csv
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUqA3cQORP5o7bUUqTQ3FWs2Dg6b9Dj6MhPNumYKkU-SNJCfn1KR0bXFNZmzgLw1P6qxppV7zqqtT/pub?output=csv';
+
+        // --- 這是第二步：轉換資料的魔法函式 ---
+        function csvToJson(csvText) {
+            // 1. 用換行符號切分出每一行
+            const lines = csvText.split("\n");
+
+            // 2. 取出第一行當作「標題」(Headers)
+            const headers = lines[0].split(",");
+
+            const result = [];
+
+            // 3. 從第二行開始巡覽資料
+            for (let i = 1; i < lines.length; i++) {
+                // 處理防呆：跳過空行
+                if (!lines[i]) continue;
+
+                const currentLine = lines[i].split(",");
+                const obj = {};
+
+                // 4. 把每個欄位塞進物件裡
+                for (let j = 0; j < headers.length; j++) {
+                    // headers[j] 是欄位名稱 (如：姓名)，currentLine[j] 是內容 (如：王小明)
+                    // trim() 是用來去除前後多餘空白
+                    obj[headers[j].trim()] = currentLine[j].trim();
+                }
+                result.push(obj);
+            }
+            return result; // 回傳整理好的物件陣列
+        }
+
+        // --- 這是第一步：去抓資料 ---
+        function getBBQData() {
+            fetch(csvUrl)
+                .then(function(response) {
+                    return response.text();
+                })
+                .then(function(csvRawText) {
+                    // 呼叫魔法函式，把生肉 (CSV) 煮成牛排 (JSON)
+                    const jsonResult = csvToJson(csvRawText);
+
+                    console.log("原始 CSV:", csvRawText);
+                    console.log("轉換後的 JSON 物件:", jsonResult);
+
+                    // 把它轉成文字顯示在網頁上給大家看
+                    document.getElementById('output').innerText = JSON.stringify(jsonResult, null, 2);
+                })
+                .catch(function(error) {
+                    console.error('讀取失敗:', error);
+                });
+        }
+
+        getBBQData();
+    </script>
+</body>
+</html>
