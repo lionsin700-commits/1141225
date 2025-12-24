@@ -11,7 +11,9 @@
     <a href="https://lionsin700-commits.github.io/1141225/"target="_blank">github page</a>
 
     <div id="output"></div>
+    <canvas id="myChart"></canvas>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // 可以替換成你的 csv
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUqA3cQORP5o7bUUqTQ3FWs2Dg6b9Dj6MhPNumYKkU-SNJCfn1KR0bXFNZmzgLw1P6qxppV7zqqtT/pub?output=csv';
@@ -58,8 +60,31 @@
                     console.log("原始 CSV:", csvRawText);
                     console.log("轉換後的 JSON 物件:", jsonResult);
 
-                    // 把它轉成文字顯示在網頁上給大家看
                     document.getElementById('output').innerText = JSON.stringify(jsonResult, null, 2);
+                    const labels = jsonResult.map(item => item["姓名"]);
+const scores = jsonResult.map(item => Number(item["分數"]));
+
+// 畫圖
+const ctx = document.getElementById('myChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar', // 長條圖
+    data: {
+        labels: labels,
+        datasets: [{
+            label: '分數',
+            data: scores,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
                 })
                 .catch(function(error) {
                     console.error('讀取失敗:', error);
@@ -67,6 +92,6 @@
         }
 
         getBBQData();
-    </script>
+</script>
 </body>
 </html>
